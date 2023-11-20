@@ -38,7 +38,7 @@ Choose an option by entering the corresponding number.
 
 ## Downloading
 
-You can download this Console App [in this page]([/guides/content/editing-an-existing-page](https://github.com/RafaelRodriguesFraga/YoutubeVideoDownloader/releases)https://github.com/RafaelRodriguesFraga/YoutubeVideoDownloader/releases).
+You can download this Console App [in this page](https://github.com/RafaelRodriguesFraga/YoutubeVideoDownloader/releases).
 Feel free to use it as you like :)
 
 ## Contributing
