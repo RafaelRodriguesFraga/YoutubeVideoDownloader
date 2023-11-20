@@ -1,7 +1,6 @@
 ﻿using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Exceptions;
-using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos.Streams;
 using YoutubeVideoDownloader.Utils;
 
@@ -10,6 +9,9 @@ namespace YoutubeVideoDownloader
     public static class DownloadVideo
     {
         static string filePath = string.Empty;
+        static string folderName = string.Empty;
+        static string directory = string.Empty;
+
         public static async Task DownloadOneAsync(string videoUrl)
         {
             try
@@ -22,7 +24,7 @@ namespace YoutubeVideoDownloader
                 if (streamInfo is not null)
                 {
                     var stream = await client.Videos.Streams.GetAsync(streamInfo);
-                    filePath = StringHelper.GetFilePath(video.Title);
+                    filePath = StringHelper.GetFilePath("", video.Title);
 
                     Console.WriteLine();
 
@@ -39,8 +41,10 @@ namespace YoutubeVideoDownloader
 
                     var progress = new ProgressIndicator();
                     await client.Videos.Streams.DownloadAsync(streamInfo, filePath, progress);
+
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Green;
+                    
                     Console.WriteLine($"Download succeeded. Your video will be at {filePath.Substring(0, 22)}");
                     Console.ResetColor();
                     Console.WriteLine();
@@ -81,9 +85,9 @@ namespace YoutubeVideoDownloader
         }
         public static async Task DownloadPlaylistAsync(string playlistUrl)
         {
-            
             try
             {
+
                 var youtube = new YoutubeClient();
                 var playlist = await youtube.Playlists.GetAsync(playlistUrl);
                 var videos = youtube.Playlists.GetVideosAsync(playlist.Id);
@@ -101,6 +105,37 @@ namespace YoutubeVideoDownloader
                 Console.WriteLine($"Total Vídeos: {totalVideos}");
 
                 Console.WriteLine();
+
+                Console.Write("Do you want to create a folder for the playlist? [y] / [n]: ");
+                char folderOption = Convert.ToChar(Console.ReadLine());
+
+                do
+                {
+                    switch (folderOption)
+                    {
+                        case 'y':
+                            Console.Write("Enter the folder name: ");
+                            folderName = Console.ReadLine();
+
+                            directory = FileHelper.CreateDirectory(folderName);                           
+                            break;
+
+                        case 'n':
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("No folder will be created!");
+                            Console.ResetColor();
+
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid option. Choose between y or n");
+                            break;
+
+                    }     
+
+                } while (folderOption != 'y' && folderOption != 'n');
+
+                Console.WriteLine();
                 var count = 0;
 
                 await foreach (var video in videos)
@@ -111,14 +146,15 @@ namespace YoutubeVideoDownloader
                     if (streamInfo != null)
                     {
                         var stream = await youtube.Videos.Streams.GetAsync(streamInfo);
-                        filePath = StringHelper.GetFilePath(video.Title);
 
                         Console.WriteLine($"=== Video {count} Details ===");
-                        Console.WriteLine($"Título: {video.Title}");
-                        Console.WriteLine($"Autor: {video.Author}");
-                        Console.WriteLine($"Duração: {video.Duration}");
-                        Console.WriteLine($"Tamanho: {streamInfo.Size}");
+                        Console.WriteLine($"Title: {video.Title}");
+                        Console.WriteLine($"Author: {video.Author}");
+                        Console.WriteLine($"Duration: {video.Duration}");
+                        Console.WriteLine($"Size: {streamInfo.Size}");
                         Console.WriteLine();
+
+                        filePath = StringHelper.GetFilePath(directory, video.Title);
 
                         var progress = new ProgressIndicator();
                         await youtube.Videos.Streams.DownloadAsync(streamInfo, filePath, progress);
@@ -138,8 +174,11 @@ namespace YoutubeVideoDownloader
                     }
 
                 }
+
+                var downloadedFolder = folderOption == 'y' ? directory : filePath.Substring(0, 22);
+
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"All videos have been downloaded. Your videos will be in  {filePath.Substring(0, 22)}");
+                Console.WriteLine($"All videos have been downloaded. Your videos will be in {downloadedFolder}");
                 Console.ResetColor();
                 Console.WriteLine();
 

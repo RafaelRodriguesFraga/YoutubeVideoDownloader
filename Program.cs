@@ -43,7 +43,7 @@ class Program
                 case 2:
                     Console.Write("Playlist Url: ");
                     var playlistUrl = Console.ReadLine();
-
+             
                     await DownloadVideo.DownloadPlaylistAsync(playlistUrl);
                     break;
 
