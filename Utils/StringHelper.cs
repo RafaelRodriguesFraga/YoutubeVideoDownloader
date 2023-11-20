@@ -7,9 +7,19 @@
             return string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
         }
 
-        public static string GetFilePath(string title)
+        public static string GetFilePath(string directory, string title)
         {
-            return Path.Combine(@"C:\Users", Environment.UserName, "Videos", SanitizeFileName(title) + ".mp4");
+            if (string.IsNullOrEmpty(directory))
+            {
+                directory = Path.Combine(@"C:\Users", Environment.UserName, "Videos");
+            }
+
+            return Path.Combine(directory, SanitizeFileName(title) + ".mp4");
+        }
+
+        public static string RemoveWhiteSpaces(string folderName)
+        {
+            return folderName.Replace(" ", "_");
         }
     }
 }
