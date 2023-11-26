@@ -11,6 +11,8 @@ namespace YoutubeVideoDownloader
         static string filePath = string.Empty;
         static string folderName = string.Empty;
         static string directory = string.Empty;
+        private const char YesOption = 'y';
+        private const char NoOption = 'n';
 
         public static async Task DownloadOneAsync(string videoUrl)
         {
@@ -113,14 +115,14 @@ namespace YoutubeVideoDownloader
                 {
                     switch (folderOption)
                     {
-                        case 'y':
+                        case YesOption:
                             Console.Write("Enter the folder name: ");
                             folderName = Console.ReadLine();
 
                             directory = FileHelper.CreateDirectory(folderName);                           
                             break;
 
-                        case 'n':
+                        case NoOption:
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.WriteLine("No folder will be created!");
                             Console.ResetColor();
@@ -133,7 +135,7 @@ namespace YoutubeVideoDownloader
 
                     }     
 
-                } while (folderOption != 'y' && folderOption != 'n');
+                } while (folderOption != YesOption && folderOption != NoOption);
 
                 Console.WriteLine();
                 var count = 0;
