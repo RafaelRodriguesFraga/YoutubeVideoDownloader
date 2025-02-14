@@ -22,7 +22,11 @@ namespace YoutubeVideoDownloader
                 var video = await client.Videos.GetAsync(videoUrl);
 
                 var streamInfoSet = await client.Videos.Streams.GetManifestAsync(video.Id);
-                var streamInfo = streamInfoSet.GetMuxedStreams().GetWithHighestVideoQuality();
+                var streamInfo = streamInfoSet
+                              .GetVideoOnlyStreams()
+                              .Where(s => s.Container == Container.Mp4)
+                              .GetWithHighestVideoQuality();
+
                 if (streamInfo is not null)
                 {
                     var stream = await client.Videos.Streams.GetAsync(streamInfo);
@@ -46,7 +50,7 @@ namespace YoutubeVideoDownloader
 
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Green;
-                    
+
                     Console.WriteLine($"Download succeeded. Your video will be at {filePath.Substring(0, 22)}");
                     Console.ResetColor();
                     Console.WriteLine();
@@ -119,7 +123,7 @@ namespace YoutubeVideoDownloader
                             Console.Write("Enter the folder name: ");
                             folderName = Console.ReadLine();
 
-                            directory = FileHelper.CreateDirectory(folderName);                           
+                            directory = FileHelper.CreateDirectory(folderName);
                             break;
 
                         case NoOption:
@@ -133,7 +137,7 @@ namespace YoutubeVideoDownloader
                             Console.WriteLine("Invalid option. Choose between y or n");
                             break;
 
-                    }     
+                    }
 
                 } while (folderOption != YesOption && folderOption != NoOption);
 
@@ -144,7 +148,10 @@ namespace YoutubeVideoDownloader
                 {
                     count++;
                     var streamInfoSet = await youtube.Videos.Streams.GetManifestAsync(video.Id);
-                    var streamInfo = streamInfoSet.GetMuxedStreams().GetWithHighestVideoQuality();
+                    var streamInfo = streamInfoSet
+                                  .GetVideoOnlyStreams()
+                                  .Where(s => s.Container == Container.Mp4)
+                                  .GetWithHighestVideoQuality();
                     if (streamInfo != null)
                     {
                         var stream = await youtube.Videos.Streams.GetAsync(streamInfo);
